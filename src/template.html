@@ -1,0 +1,956 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biblioteca de prompts jurídicos | UPTC</title>
+</head>
+<body>
+<style>
+{{FONT_CSS}}
+
+/* Sistema visual de nextleap-site en su variante clara, con la paleta de la UPTC (rojo #b31b34, amarillo #ffcc29, negro):
+   blanco, superficies rgba(0,0,0,.02), hairlines rgba(0,0,0,.09),
+   Inter, codigos mono con slash, gradiente solo como velo al hover. */
+:root{
+  --bg:#ffffff;
+  --bg-1:#fafafa;
+  --surface:rgba(0,0,0,.022);
+  --surface-h:rgba(0,0,0,.045);
+  --surface-2:rgba(0,0,0,.014);
+  --line:rgba(0,0,0,.09);
+  --line-h:rgba(0,0,0,.15);
+  --line-2:rgba(0,0,0,.20);
+  --ink:#111114;
+  --ink75:#43444c;
+  --ink60:#5f6069;
+  --ink55:#6b6c75;
+  --ink45:#85868f;
+  --ink40:#8f9099;
+  --ink20:#c4c5cc;
+  --uptc:#b31b34;
+  --uptc-d:#8b1528;
+  --uptc-y:#ffcc29;
+  --rol:#b31b34;
+  --ctx:#a37800;
+  --ins:#111114;
+  --ok:#16a34a;
+  --warn:#d97706;
+  --bad:#dc2626;
+  --grad:linear-gradient(135deg,#b31b34,#ffcc29,#111114);
+  --a-civil:#144382;
+  --a-comercial:#a37800;
+  --a-laboral:#1b8a76;
+  --a-penal:#8b1528;
+  --a-administrativo:#642f5b;
+  --a-constitucional:#d9622d;
+  --a-tributario:#0d2c56;
+  --a-ambiental:#00802b;
+  --a-digital:#1a78b0;
+  --a-internacional:#5a6069;
+  --a-practica:#b31b34;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+  font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1320px;margin:0 auto;padding:0 24px}
+@media (max-width:640px){.wrap{padding:0 16px}}
+.code{font-family:var(--mono);font-size:10px;color:var(--ink40);letter-spacing:.02em}
+.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.18em;color:var(--ink60);margin:0}
+
+/* Navbar flotante */
+.nav{position:fixed;top:8px;left:0;right:0;z-index:60}
+@media(min-width:640px){.nav{top:12px}}
+.navbar{position:relative;margin:0 auto;width:calc(100% - 1rem);max-width:1400px;border-radius:12px;
+  background:rgba(255,255,255,.82);backdrop-filter:blur(14px);
+  box-shadow:inset 0 0 0 1px var(--line),0 1px 2px rgba(0,0,0,.04),0 14px 40px rgba(0,0,0,.09);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px}
+@media(min-width:640px){.navbar{padding:11px 20px}}
+.brand{display:flex;align-items:center;gap:10px;flex:none}
+.brand .mk{height:24px;width:auto;flex:none;display:block}
+@media(min-width:640px){.brand .mk{height:27px}}
+.brand .uptc{height:30px;width:auto;display:block}
+@media(min-width:640px){.brand .uptc{height:42px;margin:-4px 0}}
+.brand span{font-size:13px;font-weight:600;letter-spacing:-.01em}
+@media(min-width:640px){.brand span{font-size:14px}}
+.footuptc{height:34px;width:auto;display:block}
+.footmark{height:30px;width:auto;display:block;opacity:.85}
+.navright{display:flex;align-items:center;gap:11px;flex:none}
+.vdiv{width:1px;height:20px;background:var(--line);flex:none}
+/* Marca del cliente como wordmark tipografico (sin logo incrustado) */
+.client{display:flex;flex-direction:column;align-items:flex-end;line-height:1.1;white-space:nowrap}
+.client-name{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink)}
+.client-sub{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink45)}
+@media(min-width:640px){.client-name{font-size:12px}.client-sub{font-size:9.5px}}
+@media(max-width:480px){.client-sub{display:none}}
+.footbrands{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.hdiv{width:1px;height:34px;background:var(--line);flex:none}
+.footclient .client-name{font-size:13px}
+.footclient .client-sub{font-size:10px}
+.navtabs{display:flex;align-items:center;gap:2px;overflow-x:auto;scrollbar-width:none}
+.navtabs::-webkit-scrollbar{display:none}
+.navtab{background:none;border:0;cursor:pointer;border-radius:6px;padding:6px 11px;font-family:var(--sans);
+  font-size:13px;font-weight:500;color:var(--ink45);white-space:nowrap;display:inline-flex;align-items:center;gap:7px;
+  transition:color .15s,background .15s}
+.navtab:hover{color:var(--ink75);background:rgba(0,0,0,.04)}
+.navtab[aria-selected="true"]{color:var(--ink);background:rgba(0,0,0,.06)}
+.navtab .code{font-size:9.5px}
+.navright{display:flex;align-items:center;gap:7px;flex:none}
+
+/* Botones */
+.btn{display:inline-flex;align-items:center;gap:7px;cursor:pointer;border-radius:6px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink60);
+  font-family:var(--sans);font-size:12px;font-weight:500;padding:7px 11px;
+  transition:background .15s,color .15s,border-color .15s}
+.btn:hover{background:var(--surface-h);color:var(--ink);border-color:var(--line-h)}
+.btn[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.solid{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:600}
+.btn.solid:hover{background:#2c2d35;color:#fff}
+.btn.done{background:rgba(22,163,74,.10);border-color:rgba(22,163,74,.45);color:var(--ok)}
+.btn svg{flex:none}
+.btn.sq{padding:7px 8px}
+
+/* Hero */
+/* Hero tipografico: sin fotografia. Una reticula fina de papel, tres manchas de color
+   (rol, contexto, instruccion) muy difusas y las letras R C I en contorno detras
+   de la tarjeta de vidrio. Todo es CSS, no hay imagenes. */
+.hero{position:relative;padding:104px 0 56px;overflow:hidden;text-align:center;isolation:isolate}
+@media(min-width:768px){.hero{padding:128px 0 70px}}
+.hero-bg{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(38% 55% at 18% 30%,rgba(179,27,52,.18),transparent 70%),
+    radial-gradient(34% 50% at 50% 78%,rgba(255,204,41,.22),transparent 70%),
+    radial-gradient(36% 52% at 84% 28%,rgba(17,17,20,.10),transparent 70%),
+    repeating-linear-gradient(0deg,rgba(0,0,0,.045) 0 1px,transparent 1px 32px),
+    repeating-linear-gradient(90deg,rgba(0,0,0,.045) 0 1px,transparent 1px 32px),
+    var(--bg-1)}
+.hero-type{position:absolute;inset:0;z-index:0;pointer-events:none;display:flex;align-items:center;
+  justify-content:space-between;padding:40px 3vw 0;font-family:var(--sans);font-weight:600;line-height:1;
+  font-size:clamp(8rem,24vw,24rem);letter-spacing:-.04em;color:transparent;user-select:none}
+.hero-type span{-webkit-text-stroke:2px rgba(0,0,0,.10)}
+.hero-type span:nth-child(1){-webkit-text-stroke-color:rgba(179,27,52,.38);transform:translateY(-4%)}
+.hero-type span:nth-child(2){-webkit-text-stroke-color:rgba(255,204,41,.70);transform:translateY(6%)}
+.hero-type span:nth-child(3){-webkit-text-stroke-color:rgba(17,17,20,.38);transform:translateY(-2%)}
+.hero-marks{position:absolute;left:0;right:0;bottom:22px;z-index:1;display:flex;justify-content:center;
+  gap:18px;flex-wrap:wrap;pointer-events:none;font-family:var(--mono);font-size:10px;color:var(--ink40);
+  letter-spacing:.06em}
+@media(max-width:640px){.hero-marks{display:none}}
+.hero-veil{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,0) 40%,
+                          rgba(255,255,255,.55) 82%,var(--bg-1) 100%)}
+.hero-in{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:18px;
+  max-width:820px;margin:0 auto;padding:34px 26px 38px;border-radius:18px;
+  background:rgba(255,255,255,.66);
+  -webkit-backdrop-filter:blur(26px) saturate(1.5);backdrop-filter:blur(26px) saturate(1.5);
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 26px 70px -30px rgba(20,10,40,.55)}
+@media(min-width:768px){.hero-in{padding:42px 44px 46px}}
+h1{margin:0;font-size:clamp(2rem,5.2vw,3.6rem);font-weight:400;line-height:1.08;
+  letter-spacing:-.018em;max-width:20ch;text-wrap:balance}
+h1 .a{display:block;font-weight:500;color:var(--ink)}
+h1 .b{display:block;margin-top:13px;color:var(--ink55)}
+.hero p.sub{margin:0;max-width:60ch;color:var(--ink60);font-size:15px;line-height:1.65}
+.hero .eyebrow{color:var(--ink60)}
+
+/* Metodo */
+.method{border-top:1px solid var(--line);background:var(--bg-1)}
+.method-in{padding:38px 0 42px}
+.method-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:860px){.method-grid{grid-template-columns:1fr}}
+.mcard{position:relative;border:1px solid var(--line);background:var(--bg);border-radius:8px;
+  padding:18px;display:flex;flex-direction:column;gap:11px;overflow:hidden}
+.mcard::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--mc)}
+.mcard[data-k="rol"]{--mc:var(--rol)}
+.mcard[data-k="ctx"]{--mc:var(--ctx)}
+.mcard[data-k="ins"]{--mc:var(--ins)}
+.mcard-top{display:flex;align-items:center;justify-content:space-between}
+.mcard-top .code{color:var(--mc);font-weight:500}
+.mcard h3{margin:0;font-size:14px;font-weight:600;letter-spacing:-.01em}
+.mcard .q{margin:0;font-size:13px;line-height:1.6;color:var(--ink55)}
+.mcard .ex{margin:0;font-family:var(--mono);font-size:11.5px;line-height:1.65;color:var(--ink75);
+  background:var(--surface);border-left:2px solid var(--mc);padding:9px 11px;border-radius:0 4px 4px 0}
+.mcard .fail{margin:0;font-size:12px;line-height:1.5;color:var(--ink45)}
+.mcard .fail b{color:var(--ink60);font-weight:600}
+
+/* Filtros */
+.filters{position:sticky;top:62px;z-index:40;background:rgba(255,255,255,.9);backdrop-filter:blur(12px);
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+@media(min-width:640px){.filters{top:68px}}
+.filters-in{padding:12px 0;display:flex;flex-direction:column;gap:10px}
+.searchrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.search{flex:1 1 240px;display:flex;align-items:center;gap:9px;border:1px solid var(--line);
+  background:var(--surface);border-radius:6px;padding:7px 11px;transition:border-color .15s,background .15s}
+.search:focus-within{border-color:var(--line-h);background:var(--bg)}
+.search input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);
+  font-family:var(--sans);font-size:13px;outline:none}
+.search input::placeholder{color:var(--ink40)}
+.search .k{font-family:var(--mono);font-size:10px;color:var(--ink40);border:1px solid var(--line);
+  border-radius:3px;padding:1px 5px}
+.count{font-family:var(--mono);font-size:11px;color:var(--ink40);white-space:nowrap;font-variant-numeric:tabular-nums}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{cursor:pointer;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:5px 10px;
+  font-family:var(--sans);font-size:12px;font-weight:500;color:var(--ink55);display:inline-flex;align-items:center;gap:7px;
+  transition:background .15s,color .15s,border-color .15s}
+.chip:hover{background:var(--surface-h);border-color:var(--line-h);color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.subchips{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.subchips[hidden]{display:none}
+.subchips .chip{font-size:11.5px;padding:4px 9px}
+.chip .n{font-family:var(--mono);font-size:9.5px;color:var(--ink40);margin-left:5px}
+.chip[aria-pressed="true"] .n{color:rgba(255,255,255,.6)}
+.chip .code{color:var(--ink40)}
+.chip[aria-pressed="true"] .code{color:rgba(255,255,255,.55)}
+.dot{width:7px;height:7px;border-radius:99px;flex:none;background:var(--ac,var(--ink20))}
+.chip[aria-pressed="true"] .dot{box-shadow:0 0 0 1.5px rgba(255,255,255,.7)}
+
+/* Paneles */
+.panel{padding:34px 0 20px}
+.panel[hidden]{display:none}
+.sechead{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;max-width:66ch}
+.sechead h2{margin:0;font-size:26px;font-weight:500;letter-spacing:-.02em;line-height:1.2}
+.sechead p{margin:0;color:var(--ink55);font-size:14px;line-height:1.65}
+
+/* Tarjetas */
+.grid{display:grid;gap:16px;grid-template-columns:repeat(2,1fr)}
+.grid.compact{grid-template-columns:repeat(auto-fill,minmax(330px,1fr))}
+@media (max-width:960px){.grid,.grid.compact{grid-template-columns:1fr}}
+.card{position:relative;border:1px solid var(--line);background:var(--bg);border-radius:8px;
+  display:flex;flex-direction:column;overflow:hidden;animation:fade .28s ease-out both;
+  transition:background .2s,border-color .2s,box-shadow .2s}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card:hover{border-color:var(--line-h);box-shadow:0 2px 4px rgba(0,0,0,.03),0 12px 28px -14px rgba(0,0,0,.18)}
+.card::after{content:"";position:absolute;inset:0;background:var(--grad);opacity:0;
+  transition:opacity .3s;pointer-events:none}
+.card:hover::after{opacity:.035}
+.card>*{position:relative;z-index:1}
+.card.compact{cursor:pointer}
+.chead{padding:14px 16px 12px;display:flex;flex-direction:column;gap:8px}
+.crow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.crow .left{display:flex;align-items:center;gap:9px;min-width:0}
+.card{border-top:2px solid var(--ac,var(--line))}
+.card .carea{color:var(--ac,var(--ink45))}
+.carea{font-size:11px;color:var(--ink45);text-transform:uppercase;letter-spacing:.1em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ctools{display:flex;align-items:center;gap:3px;flex:none}
+.ico{background:none;border:0;cursor:pointer;color:var(--ink20);padding:3px;border-radius:4px;
+  display:inline-flex;transition:color .15s,background .15s}
+.ico:hover{color:var(--ink60);background:rgba(0,0,0,.05)}
+.ico.on{color:var(--warn)}
+.card h3{margin:0;font-size:14.5px;font-weight:600;letter-spacing:-.012em;line-height:1.35;text-wrap:balance}
+.blocks{display:flex;flex-direction:column;flex:1}
+.blk{padding:11px 16px 12px;border-top:1px solid var(--line)}
+.blk[data-k="rol"]{--bc:var(--rol)}
+.blk[data-k="ctx"]{--bc:var(--ctx)}
+.blk[data-k="ins"]{--bc:var(--ins)}
+.blabel{font-family:var(--mono);font-size:10px;color:var(--bc);letter-spacing:.04em;display:block;margin-bottom:6px}
+.btext{margin:0;font-family:var(--mono);font-size:11.5px;line-height:1.75;color:var(--ink75);
+  white-space:pre-wrap;border-left:2px solid var(--surface-h);padding-left:11px}
+.card.compact .btext{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.v{color:var(--bc);background:color-mix(in srgb,var(--bc) 11%,transparent);border-radius:2px;padding:0 3px;
+  outline:none;border-bottom:1px dashed color-mix(in srgb,var(--bc) 45%,transparent);transition:background .15s}
+.v:hover{background:color-mix(in srgb,var(--bc) 18%,transparent)}
+.v:focus{background:color-mix(in srgb,var(--bc) 24%,transparent);border-bottom-style:solid}
+.cfoot{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  border-top:1px solid var(--line);background:var(--surface-2)}
+.tip{font-size:11.5px;color:var(--ink45);line-height:1.45}
+.acts{display:flex;gap:6px;flex:none}
+.more{font-family:var(--mono);font-size:10px;color:var(--ink40)}
+
+/* Antes */
+.antes{padding:12px 16px;border-top:1px solid var(--line);background:rgba(220,38,38,.045);
+  display:flex;flex-direction:column;gap:7px}
+.antes .code{color:var(--bad)}
+.antes .q{margin:0;font-family:var(--mono);font-size:11.5px;line-height:1.6;color:var(--ink75)}
+.antes .why{margin:0;font-size:12px;line-height:1.5;color:var(--ink55)}
+.antes .why b{color:var(--bad);font-weight:600}
+
+/* Dialogo */
+dialog{border:0;padding:0;background:transparent;max-width:min(900px,94vw);width:100%}
+dialog::backdrop{background:rgba(0,0,0,.4);backdrop-filter:blur(3px)}
+.sheet{background:var(--bg);border-radius:12px;overflow:hidden;
+  box-shadow:inset 0 0 0 1px var(--line),0 32px 80px rgba(0,0,0,.28)}
+.shead{padding:18px 22px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+  border-bottom:1px solid var(--line)}
+.shead h3{margin:6px 0 0;font-size:19px;font-weight:600;letter-spacing:-.02em}
+.sbody{max-height:62vh;overflow:auto}
+.sheet .blk{padding:17px 22px}
+.sheet .btext{font-size:13.5px;line-height:1.8}
+.sfoot{padding:13px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  border-top:1px solid var(--line);background:var(--surface-2)}
+
+/* Laboratorio */
+.lab{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;align-items:start}
+@media (max-width:960px){.lab{grid-template-columns:1fr}}
+.fields{display:flex;flex-direction:column;gap:12px}
+.field{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:13px 15px;transition:border-color .15s}
+.field:focus-within{border-color:var(--line-h)}
+.field[data-k="rol"]{--fc:var(--rol)}
+.field[data-k="ctx"]{--fc:var(--ctx)}
+.field[data-k="ins"]{--fc:var(--ins)}
+.fhead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.fhead label{font-family:var(--mono);font-size:10px;color:var(--fc);letter-spacing:.04em;cursor:pointer}
+.chars{font-family:var(--mono);font-size:10px;color:var(--ink20);font-variant-numeric:tabular-nums}
+.field .hint{display:block;margin:4px 0 9px;font-size:12px;color:var(--ink45);line-height:1.5}
+.field textarea{width:100%;border:0;background:transparent;resize:vertical;color:var(--ink);
+  font-family:var(--mono);font-size:12px;line-height:1.7;outline:none;min-height:66px}
+.field textarea::placeholder{color:var(--ink20)}
+.seeds{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.seed{cursor:pointer;font-family:var(--mono);font-size:10.5px;color:var(--fc);
+  background:color-mix(in srgb,var(--fc) 8%,transparent);
+  border:1px solid color-mix(in srgb,var(--fc) 25%,transparent);border-radius:5px;padding:3px 8px;transition:background .15s}
+.seed:hover{background:color-mix(in srgb,var(--fc) 16%,transparent)}
+.side{display:flex;flex-direction:column;gap:14px;position:sticky;top:128px}
+.box{border:1px solid var(--line);background:var(--bg);border-radius:8px;overflow:hidden}
+.boxhead{padding:11px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  border-bottom:1px solid var(--line);background:var(--surface-2)}
+.pv{padding:14px;font-family:var(--mono);font-size:11.5px;line-height:1.75;white-space:pre-wrap;
+  color:var(--ink75);max-height:220px;overflow:auto}
+.pv .ph{color:var(--ink20)}
+.meterhead{padding:14px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line)}
+.score{font-size:30px;font-weight:600;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums;
+  min-width:2.4ch;color:var(--sc,var(--ink20));transition:color .3s}
+.score sub{font-family:var(--mono);font-size:11px;font-weight:400;color:var(--ink20);vertical-align:baseline}
+.bar{flex:1;height:4px;border-radius:99px;background:rgba(0,0,0,.07);overflow:hidden}
+.fill{height:100%;width:0;background:var(--grad);transition:width .45s cubic-bezier(.2,.7,.3,1)}
+.verdict{font-size:12px;color:var(--ink55);text-align:right;max-width:15ch;line-height:1.35}
+.checks{list-style:none;margin:0;padding:6px 0}
+.checks li{display:flex;gap:10px;align-items:flex-start;padding:6px 14px;font-size:12.5px;line-height:1.45}
+.checks .mk{flex:none;width:14px;height:14px;border-radius:99px;display:grid;place-items:center;
+  font-size:9px;margin-top:2px;background:rgba(0,0,0,.06);color:var(--ink20)}
+.checks li.on .mk{background:rgba(22,163,74,.14);color:var(--ok)}
+.checks .tx{color:var(--ink75)}
+.checks li.on .tx{color:var(--ink40)}
+.checks .ms{display:block;font-size:11.5px;color:var(--ink40);margin-top:2px}
+.checks li.on .ms{display:none}
+.pii{margin:0 14px 14px;padding:10px 12px;border-radius:6px;background:rgba(217,119,6,.09);
+  border:1px solid rgba(217,119,6,.35);font-size:12px;color:var(--ink75);line-height:1.55}
+.pii b{color:var(--warn);font-weight:600}
+.pii[hidden]{display:none}
+.klist{padding:14px}
+.klist h4{margin:0 0 11px;font-size:13px;font-weight:600}
+.klist ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.klist li{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:var(--ink55);line-height:1.45}
+.klist input{margin:2px 0 0;accent-color:var(--rol);flex:none;width:14px;height:14px;cursor:pointer}
+.klist label{cursor:pointer}
+.klist input:checked + label{color:var(--ink20);text-decoration:line-through}
+
+/* Ejercicio */
+.exhead{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.timer{font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums;color:var(--ink60);
+  border:1px solid var(--line);border-radius:6px;padding:6px 12px;min-width:70px;text-align:center}
+.timer.low{color:var(--bad);border-color:rgba(220,38,38,.4)}
+.pool{display:flex;flex-wrap:wrap;gap:8px;padding:16px;border:1px dashed var(--line-h);border-radius:8px;
+  background:var(--surface-2);min-height:86px;margin-bottom:16px;transition:background .15s}
+.pool:empty::after{content:"Sin fragmentos pendientes. Pulsa Verificar.";font-size:13px;color:var(--ink20);margin:auto}
+.pool.over{background:var(--surface-h)}
+.frag{cursor:grab;user-select:none;max-width:330px;font-family:var(--mono);font-size:11.5px;line-height:1.55;
+  border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:8px 11px;color:var(--ink75);
+  transition:transform .15s,border-color .15s,background .15s,box-shadow .15s}
+.frag:hover{border-color:var(--line-h);transform:translateY(-1px);box-shadow:0 4px 12px -6px rgba(0,0,0,.2)}
+.frag.sel{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.frag.drag{opacity:.35}
+.frag.ok{border-color:rgba(22,163,74,.55);background:rgba(22,163,74,.09);color:var(--ink)}
+.frag.no{border-color:rgba(220,38,38,.55);background:rgba(220,38,38,.07);animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.buckets{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:860px){.buckets{grid-template-columns:1fr}}
+.bucket{border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:14px;min-height:160px;
+  display:flex;flex-direction:column;gap:9px;position:relative;overflow:hidden;transition:background .15s,border-color .15s}
+.bucket::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--bc)}
+.bucket[data-k="rol"]{--bc:var(--rol)}
+.bucket[data-k="ctx"]{--bc:var(--ctx)}
+.bucket[data-k="ins"]{--bc:var(--ins)}
+.bucket.over{background:color-mix(in srgb,var(--bc) 7%,transparent);border-color:var(--line-h)}
+.bhead{display:flex;align-items:center;gap:9px}
+.bhead .code{color:var(--bc)}
+.bhead .nm{font-size:12px;font-weight:500;color:var(--ink60)}
+.bhead .ct{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink20)}
+.exfoot{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap}
+.exres{font-size:13px;color:var(--ink55)}
+.exres b{color:var(--ink);font-weight:600}
+.exres.win b{color:var(--ok)}
+
+footer{margin-top:58px;border-top:1px solid var(--line);padding:28px 0 56px;display:flex;gap:20px;
+  justify-content:space-between;flex-wrap:wrap;align-items:flex-start}
+.note{max-width:62ch;font-size:12px;color:var(--ink45);line-height:1.65;margin:0}
+.note strong{color:var(--ink60);font-weight:600}
+.empty{padding:48px 0;text-align:center;color:var(--ink40);font-size:13px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,16px);opacity:0;pointer-events:none;
+  background:var(--ink);color:#fff;font-size:12.5px;font-weight:500;padding:9px 16px;border-radius:6px;
+  box-shadow:0 20px 50px rgba(0,0,0,.3);z-index:80;transition:opacity .2s,transform .2s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+:focus-visible{outline:2px solid var(--rol);outline-offset:2px;border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="nav">
+  <div class="navbar">
+    <div class="brand"><img class="uptc" src="{{UPTC_PNG}}" alt="Universidad Pedagógica y Tecnológica de Colombia" width="78" height="30"></div>
+    <div class="navtabs" role="tablist">
+      <button class="navtab" role="tab" data-t="biblioteca" aria-selected="true"><span class="code">/1</span>Biblioteca</button>
+      <button class="navtab" role="tab" data-t="laboratorio" aria-selected="false"><span class="code">/2</span>Laboratorio</button>
+      <button class="navtab" role="tab" data-t="ejercicio" aria-selected="false"><span class="code">/3</span>Ejercicio</button>
+    </div>
+    <div class="navright">
+      <span class="vdiv"></span>
+      <span class="client" aria-label="Biblioteca de prompts jurídicos, Next Leap"><span class="client-name">Prompts jurídicos</span><span class="client-sub">Next Leap para la UPTC</span></span>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-type" aria-hidden="true"><span>R</span><span>C</span><span>I</span></div>
+  <div class="hero-veil" aria-hidden="true"></div>
+  <div class="wrap"><div class="hero-in">
+    <p class="eyebrow">/capacitación · IA aplicada al derecho · UPTC</p>
+    <h1>
+      <span class="a">Un prompt no es una consulta.</span>
+      <span class="b">Es un encargo con responsable.</span>
+    </h1>
+    <p class="sub"><span id="n-prompts">Más de cien</span> prompts en <span id="n-areas">once</span> áreas y sus subáreas del derecho colombiano. Todos siguen la misma estructura de tres partes: rol, contexto e instrucción. Elige el área, afina por subárea o busca por palabra clave. Los campos entre corchetes son editables. Cámbialos por los datos de tu caso y copia el prompt.</p>
+  </div></div>
+  <div class="hero-marks" aria-hidden="true"><span>Ley 1564 de 2012</span><span>Ley 1437 de 2011</span><span>Decreto 2591 de 1991</span><span>Ley 906 de 2004</span><span>Código Sustantivo del Trabajo</span><span>Ley 1581 de 2012</span></div>
+</header>
+
+<section class="method">
+  <div class="wrap method-in">
+    <div class="method-grid">
+      <div class="mcard" data-k="rol">
+        <div class="mcard-top"><span class="code">/rol</span><span class="code">R</span></div>
+        <h3>Quién responde</h3>
+        <p class="q">La especialidad desde la que quieres la respuesta, con su criterio profesional.</p>
+        <p class="ex">Eres un abogado litigante con 15 años de práctica en procesos civiles ante juzgados y tribunales de Colombia.</p>
+        <p class="fail"><b>Si falta:</b> la respuesta suena a manual y no a abogado.</p>
+      </div>
+      <div class="mcard" data-k="ctx">
+        <div class="mcard-top"><span class="code">/contexto</span><span class="code">C</span></div>
+        <h3>Qué sabe de tu caso</h3>
+        <p class="q">Situación real, datos concretos, términos, qué hay en el expediente y qué ya intentaste.</p>
+        <p class="ex">La sentencia de primera instancia se notificó por estado hace dos días. Negó las pretensiones por falta de prueba del daño. El dictamen pericial no fue controvertido.</p>
+        <p class="fail"><b>Si falta:</b> la respuesta sirve para otro caso. Es el bloque que más se olvida.</p>
+      </div>
+      <div class="mcard" data-k="ins">
+        <div class="mcard-top"><span class="code">/instrucción</span><span class="code">I</span></div>
+        <h3>Qué debe entregar</h3>
+        <p class="q">Entregable, formato, extensión, lo que no debe hacer y cómo verificar el resultado.</p>
+        <p class="ex">Redacta los reparos concretos de la apelación en una lista numerada. Máximo 400 palabras. Marca con [verificar] cada norma que cites. No inventes sentencias.</p>
+        <p class="fail"><b>Si falta:</b> tres párrafos que igual hay que reescribir.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="filters" id="filters">
+  <div class="wrap filters-in">
+    <div class="searchrow">
+      <div class="search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Buscar por tarea, área o palabra clave" aria-label="Buscar prompts">
+        <span class="k">/</span>
+      </div>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Filtrar por área"></div>
+    <div class="chips subchips" id="subchips" role="group" aria-label="Filtrar por subárea" hidden></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section class="panel" id="p-biblioteca">
+    <div class="grid compact" id="grid"></div>
+    <p class="empty" id="empty" hidden>Sin resultados. Prueba otra palabra o quita el filtro.</p>
+  </section>
+
+  <section class="panel" id="p-laboratorio" hidden>
+    <div class="sechead">
+      <p class="eyebrow">/laboratorio</p>
+      <h2>Escribe el tuyo. El medidor te dice qué falta.</h2>
+      <p>Separa las tres partes y observa el puntaje. El medidor revisa ocho criterios mientras escribes. Si algo falta, la pista aparece debajo. Úsalo con un asunto real de tu práctica. El detector de datos personales te avisa si quedó una cédula, un NIT o un radicado.</p>
+    </div>
+    <div class="lab">
+      <div class="fields">
+        <div class="field" data-k="rol">
+          <div class="fhead"><label for="f-rol">/rol</label><span class="chars" id="c-rol">0</span></div>
+          <span class="hint">Especialidad, años de práctica, tipo de clientes o despachos y para quién escribe.</span>
+          <textarea id="f-rol" placeholder="Eres un abogado... con experiencia en..."></textarea>
+          <div class="seeds" data-for="f-rol">
+            <button class="seed" type="button">Eres un abogado litigante senior</button>
+            <button class="seed" type="button">con 15 años de práctica en procesos civiles</button>
+            <button class="seed" type="button">en Colombia</button>
+            <button class="seed" type="button">que escribe para clientes sin formación jurídica</button>
+          </div>
+        </div>
+        <div class="field" data-k="ctx">
+          <div class="fhead"><label for="f-ctx">/contexto</label><span class="chars" id="c-ctx">0</span></div>
+          <span class="hint">Hechos, datos concretos, términos, etapa procesal, qué hay en el expediente y qué ya intentaste.</span>
+          <textarea id="f-ctx" placeholder="El caso es... El término vence... El expediente tiene... Ya intentamos..."></textarea>
+          <div class="seeds" data-for="f-ctx">
+            <button class="seed" type="button">El término vence el</button>
+            <button class="seed" type="button">La contraparte es</button>
+            <button class="seed" type="button">El expediente tiene</button>
+            <button class="seed" type="button">Ya intentamos</button>
+            <button class="seed" type="button">Información anonimizada</button>
+          </div>
+        </div>
+        <div class="field" data-k="ins">
+          <div class="fhead"><label for="f-ins">/instrucción</label><span class="chars" id="c-ins">0</span></div>
+          <span class="hint">Verbo, entregable, formato, extensión, qué no hacer y cómo verificar.</span>
+          <textarea id="f-ins" placeholder="Devuelve... en formato... de máximo... No concluyas... Marca con [verificar]..."></textarea>
+          <div class="seeds" data-for="f-ins">
+            <button class="seed" type="button">Devuelve una tabla con</button>
+            <button class="seed" type="button">Redacta el memorial con</button>
+            <button class="seed" type="button">Máximo 300 palabras</button>
+            <button class="seed" type="button">No concluyas: presenta opciones</button>
+            <button class="seed" type="button">Marca con [verificar] las normas que cites</button>
+            <button class="seed" type="button">No inventes sentencias</button>
+            <button class="seed" type="button">No incluyas datos identificables</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" id="load-example" type="button">Cargar un ejemplo de la biblioteca</button>
+          <button class="btn" id="clear-build" type="button">Limpiar</button>
+        </div>
+      </div>
+      <div class="side">
+        <div class="box">
+          <div class="meterhead">
+            <span class="score" id="score">0<sub>/100</sub></span>
+            <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+              <div class="bar"><div class="fill" id="fill"></div></div>
+              <span class="code">/calidad-del-prompt</span>
+            </div>
+            <span class="verdict" id="verdict">Empieza a escribir</span>
+          </div>
+          <ul class="checks" id="checks"></ul>
+          <div class="pii" id="pii" hidden></div>
+        </div>
+        <div class="box">
+          <div class="boxhead">
+            <span class="code">/prompt-armado</span>
+            <button class="btn" id="copy-build" type="button">Copiar</button>
+          </div>
+          <div class="pv" id="preview"></div>
+        </div>
+        <div class="box klist">
+          <h4>Antes de enviarlo, verifica</h4>
+          <ul>
+            <li><input type="checkbox" id="k1"><label for="k1">El rol tiene una especialidad concreta, no "eres un abogado".</label></li>
+            <li><input type="checkbox" id="k2"><label for="k2">El contexto incluye un dato, un plazo o una restricción real.</label></li>
+            <li><input type="checkbox" id="k3"><label for="k3">Dije el formato de salida y la extensión.</label></li>
+            <li><input type="checkbox" id="k4"><label for="k4">Dije qué <em>no</em> hacer: no concluir por mí, no inventar normas, marcar [verificar].</label></li>
+            <li><input type="checkbox" id="k5"><label for="k5">No hay nombres, cédulas, NIT, radicados ni información sujeta a reserva.</label></li>
+            <li><input type="checkbox" id="k6"><label for="k6">Voy a verificar cada norma y cada sentencia de la respuesta en la fuente oficial.</label></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="p-ejercicio" hidden>
+    <div class="sechead">
+      <p class="eyebrow">/ejercicio · 5 minutos por ronda</p>
+      <h2>Rol, contexto o instrucción.</h2>
+      <p>Arrastra cada fragmento a su bloque. Si estás proyectando, toca el fragmento y luego el bloque. La pista está en cómo empieza cada frase. Las últimas rondas tienen fragmentos que engañan.</p>
+    </div>
+    <div class="exhead">
+      <div class="chips" id="rounds"></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="timer" id="timer">3:00</span>
+        <button class="btn" id="timer-btn" type="button">Iniciar</button>
+      </div>
+    </div>
+    <div class="pool" id="pool"></div>
+    <div class="buckets">
+      <div class="bucket" data-k="rol"><div class="bhead"><span class="code">/rol</span><span class="nm">Quién responde</span><span class="ct" data-c>0</span></div></div>
+      <div class="bucket" data-k="ctx"><div class="bhead"><span class="code">/contexto</span><span class="nm">Qué sabe del caso</span><span class="ct" data-c>0</span></div></div>
+      <div class="bucket" data-k="ins"><div class="bhead"><span class="code">/instrucción</span><span class="nm">Qué debe entregar</span><span class="ct" data-c>0</span></div></div>
+    </div>
+    <div class="exfoot">
+      <button class="btn solid" id="check-ex" type="button">Verificar</button>
+      <button class="btn" id="reset-ex" type="button">Reiniciar ronda</button>
+      <span class="exres" id="ex-result"></span>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p class="note"><strong>Manejo de información.</strong> Estos prompts trabajan con información anonimizada. Antes de pegar contenido en una herramienta de IA, reemplaza nombres, cédulas, NIT, radicados y datos de contacto por marcadores genéricos. No pegues documentos con reserva legal ni información amparada por el secreto profesional. Usa las herramientas que autorice tu firma o entidad.<br><br><strong>Verificación de citas.</strong> Los modelos de lenguaje inventan normas, artículos y sentencias con apariencia verosímil. Verifica cada cita en la fuente oficial antes de usarla. La salida del modelo es un borrador. El concepto jurídico y la decisión son del abogado responsable.</p>
+  <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end">
+    <div class="footbrands">
+      <img class="footuptc" src="{{UPTC_PNG}}" alt="UPTC" width="78" height="30">
+      <span class="hdiv"></span>
+      <img class="footmark" src="{{LOGO_PNG}}" alt="Next Leap" width="31" height="30">
+    </div>
+    <p class="note"><strong>Next Leap</strong> · Material académico para la UPTC<br>Rol · Contexto · Instrucción<br><span class="code" id="foot-count"></span><br><span class="code">El escudo y el logotipo son de la UPTC y se usan con fines académicos.</span></p>
+  </div>
+</footer>
+
+<dialog id="dlg"><div class="sheet" id="sheet"></div></dialog>
+<div class="toast" id="toast"></div>
+
+<script>
+const AREAS=[["civil","Civil, procesal y familia"],["comercial","Comercial, societario y consumo"],
+["laboral","Laboral y seguridad social"],["penal","Penal"],
+["administrativo","Administrativo y contratación estatal"],["constitucional","Constitucional y derechos humanos"],
+["tributario","Tributario y aduanero"],["ambiental","Ambiental, agrario y minero-energético"],
+["digital","Datos, tecnología y propiedad intelectual"],["internacional","Internacional y arbitraje"],
+["practica","Práctica profesional y ética"]];
+
+const PROMPTS=[
+{{PROMPTS}}
+];
+
+{{RONDAS}}
+
+
+const el=s=>document.querySelector(s), els=s=>[...document.querySelectorAll(s)];
+const AREA_NAME=Object.fromEntries(AREAS);
+const AREA_CODE=Object.fromEntries(AREAS.map(([k],i)=>[k,i+1]));
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const KLAB={rol:"/rol",ctx:"/contexto",ins:"/instrucción"};
+const CODES=(()=>{const n={};return PROMPTS.map(p=>{n[p.a]=(n[p.a]||0)+1;return `/${AREA_CODE[p.a]}.${n[p.a]}`})})();
+/* Estado editable: toda copia sale de aqui, no del DOM */
+const STATE=PROMPTS.map(p=>({rol:p.r,ctx:p.c,ins:p.i}));
+
+let toastT;
+function toast(m){const t=el("#toast");t.textContent=m;t.classList.add("show");
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),1900)}
+async function copiar(texto,btn){
+  let ok=false;
+  try{await navigator.clipboard.writeText(texto);ok=true}
+  catch(e){
+    const ta=document.createElement("textarea");
+    ta.value=texto;ta.style.position="fixed";ta.style.opacity="0";
+    document.body.appendChild(ta);ta.select();
+    try{ok=document.execCommand("copy")}catch(_){ok=false}
+    document.body.removeChild(ta);
+  }
+  toast(ok?"Prompt copiado":"No se pudo copiar: selecciona el texto");
+  if(btn){const o=btn.innerHTML;btn.innerHTML=ok?"Copiado":"Copia manual";btn.classList.toggle("done",ok);
+    setTimeout(()=>{btn.innerHTML=o;btn.classList.remove("done")},1600)}
+}
+const armar=i=>`ROL\n${STATE[i].rol}\n\nCONTEXTO\n${STATE[i].ctx}\n\nINSTRUCCIÓN\n${STATE[i].ins}`;
+
+/* ══ BIBLIOTECA ══ */
+let filtro="todas", sub="", query="";
+const favs=new Set();
+try{JSON.parse(localStorage.getItem("rci-uptc-favs")||"[]").forEach(i=>favs.add(i))}catch(e){}
+const saveFavs=()=>{try{localStorage.setItem("rci-uptc-favs",JSON.stringify([...favs]))}catch(e){}};
+
+const marcar=t=>esc(t).replace(/\[([^\]]+)\]/g,(_,v)=>`<span class="v" contenteditable="true" spellcheck="false">${v}</span>`);
+const bloques=(i,editable)=>["rol","ctx","ins"].map(k=>
+  `<div class="blk" data-k="${k}"><span class="blabel">${KLAB[k]}</span><p class="btext"${editable?' data-edit':''}>${editable?marcar(STATE[i][k]):esc(STATE[i][k])}</p></div>`).join("");
+
+function tarjeta(p,i,d){
+  const c=document.createElement("article");
+  c.className="card compact"; c.dataset.idx=i; c.style.animationDelay=(d||0)+"ms";
+  c.style.setProperty("--ac",`var(--a-${p.a})`);
+  const largo=STATE[i].rol.length+STATE[i].ctx.length+STATE[i].ins.length;
+  c.innerHTML=`
+  <div class="chead">
+    <div class="crow">
+      <div class="left"><span class="code">${CODES[i]}</span><span class="carea">${AREA_NAME[p.a]}${p.s?" · "+esc(p.s):""}</span></div>
+      <div class="ctools">
+        <button class="ico ${favs.has(i)?"on":""}" data-act="fav" aria-label="Favorito" title="Favorito">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="${favs.has(i)?"currentColor":"none"}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"/></svg>
+        </button>
+        <button class="ico" data-act="zoom" aria-label="Ampliar" title="Abrir y editar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-7 7M10 20H4v-6M4 20l7-7"/></svg>
+        </button>
+      </div>
+    </div>
+    <h3>${esc(p.t)}</h3>
+  </div>
+  <div class="blocks">${bloques(i,false)}</div>
+  <div class="cfoot">
+    <span class="more">${largo} caracteres · abrir para editar</span>
+    <div class="acts">
+      <button class="btn sq" data-act="reset" aria-label="Restablecer" title="Restablecer campos">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+      </button>
+      <button class="btn" data-act="copy">Copiar</button>
+    </div>
+  </div>`;
+  return c;
+}
+function render(){
+  const g=el("#grid"); g.innerHTML="";
+  const q=query.trim().toLowerCase(); let n=0;
+  PROMPTS.forEach((p,i)=>{
+    const okA=filtro==="todas"||(filtro==="favs"?favs.has(i):p.a===filtro&&(!sub||p.s===sub));
+    const txt=(p.t+" "+AREA_NAME[p.a]+" "+(p.s||"")+" "+STATE[i].rol+" "+STATE[i].ctx+" "+STATE[i].ins).toLowerCase();
+    if(okA&&(!q||txt.includes(q))){g.appendChild(tarjeta(p,i,Math.min(n,12)*20));n++}
+  });
+  el("#empty").hidden=n>0;
+  el("#count").textContent=n===PROMPTS.length?`${PROMPTS.length} prompts`:`${n} / ${PROMPTS.length}`;
+}
+const cuenta=f=>PROMPTS.filter(f).length;
+function subchips(){
+  const c=el("#subchips");
+  const subs=filtro==="todas"||filtro==="favs"?[]:[...new Set(PROMPTS.filter(p=>p.a===filtro).map(p=>p.s||"General"))];
+  c.hidden=subs.length<2; c.innerHTML="";
+  if(c.hidden) return;
+  [["","Todas las subáreas",cuenta(p=>p.a===filtro)],...subs.map(x=>[x,x,cuenta(p=>p.a===filtro&&(p.s||"General")===x)])].forEach(([k,label,n])=>{
+    const b=document.createElement("button");
+    b.className="chip"; b.type="button"; b.dataset.s=k;
+    b.innerHTML=esc(label)+`<span class="n">${n}</span>`;
+    b.setAttribute("aria-pressed",String(k===sub)); c.appendChild(b);
+  });
+}
+function chips(){
+  const c=el("#chips");
+  [["todas","Todas",""],...AREAS.map(([k,l])=>[k,l,"/"+AREA_CODE[k]])].forEach(([k,label,code])=>{
+    const b=document.createElement("button");
+    b.className="chip"; b.type="button"; b.dataset.k=k;
+    const n=k==="todas"?PROMPTS.length:cuenta(p=>p.a===k);
+    b.innerHTML=(code?`<span class="dot" style="--ac:var(--a-${k})"></span><span class="code">${code}</span>`:"")+label+`<span class="n">${n}</span>`;
+    b.setAttribute("aria-pressed",String(k===filtro)); c.appendChild(b);
+  });
+  const f=document.createElement("button");
+  f.className="chip"; f.type="button"; f.dataset.k="favs";
+  f.innerHTML=`<span class="code">/fav</span>Favoritos <span class="code" id="fav-n">${favs.size}</span>`;
+  f.setAttribute("aria-pressed","false"); c.appendChild(f);
+  c.addEventListener("click",e=>{
+    const b=e.target.closest(".chip"); if(!b) return;
+    filtro=b.dataset.k; sub="";
+    c.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.k===filtro)));
+    subchips(); render();
+  });
+  el("#subchips").addEventListener("click",e=>{
+    const b=e.target.closest(".chip"); if(!b) return;
+    sub=b.dataset.s;
+    el("#subchips").querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.s===sub)));
+    render();
+  });
+}
+/* Editar en linea (vista completa) sincroniza STATE */
+el("#grid").addEventListener("input",e=>{
+  const t=e.target.closest(".btext[data-edit]"); if(!t) return;
+  const card=t.closest(".card"), k=t.closest(".blk").dataset.k;
+  STATE[+card.dataset.idx][k]=t.innerText.trim();
+});
+el("#grid").addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]");
+  if(!b){
+    const card=e.target.closest(".card.compact");
+    if(card&&!e.target.closest(".btext[data-edit]")) abrir(+card.dataset.idx);
+    return;
+  }
+  const card=b.closest(".card"), idx=+card.dataset.idx, a=b.dataset.act;
+  if(a==="copy") copiar(armar(idx),b);
+  else if(a==="reset"){
+    STATE[idx]={rol:PROMPTS[idx].r,ctx:PROMPTS[idx].c,ins:PROMPTS[idx].i};
+    card.querySelector(".blocks").innerHTML=bloques(idx,false); toast("Campos restablecidos");
+  }
+  else if(a==="fav"){
+    favs.has(idx)?favs.delete(idx):favs.add(idx); saveFavs();
+    const n=el("#fav-n"); if(n) n.textContent=favs.size; render();
+    toast(favs.has(idx)?"Añadido a favoritos":"Quitado de favoritos");
+  }
+  else if(a==="zoom") abrir(idx);
+});
+function abrir(idx){
+  const p=PROMPTS[idx];
+  el("#sheet").innerHTML=`
+  <div class="shead">
+    <div><span class="code">${CODES[idx]} · ${AREA_NAME[p.a]}${p.s?" · "+esc(p.s):""}</span><h3>${esc(p.t)}</h3></div>
+    <button class="btn sq" data-close aria-label="Cerrar">✕</button>
+  </div>
+  ${p.mal?`<div class="antes"><span class="code">/antes</span><p class="q">"${esc(p.mal)}"</p><p class="why"><b>Falla porque:</b> ${esc(p.por||"")}</p></div>`:""}
+  <div class="sbody" data-idx="${idx}">${bloques(idx,true)}</div>
+  <div class="sfoot"><span class="tip">${esc(p.tip||"")}</span>
+    <div class="acts"><button class="btn" data-reset>Restablecer</button><button class="btn solid" data-copy>Copiar prompt</button></div>
+  </div>`;
+  el("#dlg").showModal();
+}
+el("#dlg").addEventListener("input",e=>{
+  const t=e.target.closest(".btext[data-edit]"); if(!t) return;
+  const idx=+el(".sbody").dataset.idx, k=t.closest(".blk").dataset.k;
+  STATE[idx][k]=t.innerText.trim();
+});
+el("#dlg").addEventListener("click",e=>{
+  const idx=el(".sbody")?+el(".sbody").dataset.idx:-1;
+  if(e.target.closest("[data-close]")||e.target.id==="dlg"){ el("#dlg").close(); render(); return; }
+  if(e.target.closest("[data-copy]")) copiar(armar(idx),e.target.closest("[data-copy]"));
+  if(e.target.closest("[data-reset]")){
+    STATE[idx]={rol:PROMPTS[idx].r,ctx:PROMPTS[idx].c,ins:PROMPTS[idx].i};
+    el(".sbody").innerHTML=bloques(idx,true); toast("Campos restablecidos");
+  }
+});
+/* ══ LABORATORIO ══ */
+const F={rol:el("#f-rol"),ctx:el("#f-ctx"),ins:el("#f-ins")};
+const CRIT=[
+ {p:20,t:"El rol está definido",m:"Empieza con “Eres un...” y nombra una especialidad.",
+  f:v=>/\b(eres un|eres una|act[uú]a como|como un)\b/i.test(v.rol)&&v.rol.length>=30},
+ {p:10,t:"El rol tiene experiencia o mercado",m:"Añade años de práctica, tipo de clientes o despachos, o país.",
+  f:v=>/\b(a[nñ]os|experiencia|pr[aá]ctica|senior|especializad|especialista|con dominio|familiarizad|asesorando|litigando|litigante|experto|experta)/i.test(v.rol)},
+ {p:20,t:"El contexto describe tu caso",m:"Describe la situación real en al menos dos frases.",
+  f:v=>v.ctx.length>=80},
+ {p:12,t:"Hay datos concretos",m:"Incluye una cifra, una fecha o un término.",
+  f:v=>/\d/.test(v.ctx)||/\[[^\]]+\]/.test(v.ctx)},
+ {p:10,t:"Dices para quién o con qué límite",m:"Nombra el despacho, el término, la contraparte, el cliente o la restricción.",
+  f:v=>/\b(audiencia|comit[eé]|cliente|equipo|jefe|gerente|gerencia|juez|juzgado|tribunal|despacho|fiscal[ií]a|entidad|autoridad|contraparte|expediente|plazo|t[eé]rmino|vence|restricci|presupuesto|minutos|d[ií]as|reuni[oó]n|demanda|requerimiento|tutela|sentencia|proceso)\b/i.test(v.ctx)},
+ {p:18,t:"Pides un formato de salida",m:"Di si quieres tabla, memorial, matriz, minuta, carta, lista de chequeo o cuadro.",
+  f:v=>/\b(tabla|vi[nñ]etas|lista|correo|gui[oó]n|ficha|columnas|formato|p[aá]rrafos|p[aá]gina|matriz|agenda|memorando|memorial|escrito|concepto|minuta|cuadro|checklist|borrador|carta|acta|resumen|cronograma|calendario|demanda|recurso|alegato|tutela)\b/i.test(v.ins)},
+ {p:5,t:"Pones un límite de extensión",m:"Añade “máximo N palabras” o similar.",
+  f:v=>/\b(m[aá]ximo|no m[aá]s de|hasta \d|\d+\s*palabras|una p[aá]gina|\d+\s*l[ií]neas)\b/i.test(v.ins)},
+ {p:5,t:"Dices qué no hacer",m:"Cierra con “no concluyas”, “no inventes sentencias” o “marca con [verificar]”.",
+  f:v=>/\b(no inventes|no incluyas|no uses|no propongas|no concluyas|no afirmes|no cites|no recomiendes|no prometas|no redactes|no hagas|no emitas|evita|prohibido|sin jerga|sin adjetivos|sin lenguaje jur|marca con)\b/i.test(v.ins)}
+];
+/* Orden: de lo mas especifico a lo mas general. Se reportan todos los hallazgos. */
+const PII=[
+ {re:/\b\d{5}[-\s.]?\d{2}[-\s.]?\d{2}[-\s.]?\d{3}[-\s.]?\d{4}[-\s.]?\d{5}[-\s.]?\d{2}\b/,q:"un radicado judicial de 23 dígitos"},
+ {re:/\b[\w.+-]+@[\w-]+(\.[\w-]+)*\.[a-z]{2,}\b/i,q:"un correo electrónico"},
+ {re:/(\+?57[\s-]?)?\b3\d{2}[\s-]?\d{3}[\s-]?\d{4}\b/,q:"un número de celular"},
+ {re:/(\+?57[\s-]?)?\(?\b60\d\)?[\s-]?\d{3}[\s-]?\d{4}\b/,q:"un teléfono fijo"},
+ {re:/\bnit\.?\s*(n[°º.o]*\s*)?:?\s*\d/i,q:"un NIT"},
+ {re:/\b\d{3}\.?\d{3}\.?\d{3}\s?-\s?\d\b/,q:"un número con formato de NIT"},
+ {re:/\b(c\.?\s?c\.?|c[eé]dula( de ciudadan[ií]a)?|t\.?\s?i\.?|c\.?\s?e\.?|pasaporte)\s*(n[°º.o]*\s*)?:?\s*\d/i,q:"un número de documento de identidad"},
+ {re:/(?<![$\d.,]\s?)\b\d{1,3}(\.\d{3}){2,3}\b(?![.,]\d)/,q:"un número con puntos que parece una cédula"},
+ {re:/\b(radicado|radicaci[oó]n|expediente|proceso|rad\.?|spoa|noticia criminal)\s*(n[°º.o]*\s*)?:?\s*\d{6,}/i,q:"un número de radicado, expediente o noticia criminal"},
+ {re:/\b(matr[ií]cula( inmobiliaria| mercantil)?|folio de matr[ií]cula|escritura( p[uú]blica)?|p[oó]liza)\s*(n[°º.o]*\s*)?:?\s*[\dA-Z]{0,4}-?\d{3,}/i,q:"un número de matrícula, escritura o póliza"},
+ {re:/\b\d{3}-\d{4,}\b/,q:"un número con formato de folio de matrícula inmobiliaria"},
+ {re:/\b(tarjeta profesional|t\.?\s?p\.?)\s*(n[°º.o]*\s*)?:?\s*\d{4,}/i,q:"una tarjeta profesional"},
+ {re:/\b\d{7,10}\b/,q:"un número que parece una cédula, un NIT o un teléfono"}
+];
+function evaluar(){
+  const v={rol:F.rol.value.trim(),ctx:F.ctx.value.trim(),ins:F.ins.value.trim()};
+  const todo=[v.rol,v.ctx,v.ins].join(" ");
+  let pts=0;
+  el("#checks").innerHTML=CRIT.map(c=>{
+    const ok=c.f(v); if(ok) pts+=c.p;
+    return `<li class="${ok?"on":""}"><span class="mk">${ok?"✓":"·"}</span><span class="tx">${c.t}<span class="ms">${c.m}</span></span></li>`;
+  }).join("");
+  el("#fill").style.width=pts+"%";
+  const s=el("#score"); s.innerHTML=`${pts}<sub>/100</sub>`;
+  s.style.setProperty("--sc",pts>=80?"var(--ok)":pts>=50?"var(--warn)":pts>0?"var(--bad)":"var(--ink20)");
+  el("#verdict").textContent=!todo.trim()?"Empieza a escribir"
+    :pts>=85?"Listo para usar":pts>=65?"Bien: pule el detalle"
+    :pts>=40?"Falta contexto o formato":"Todavía es un pedido vago";
+  const hits=[...new Set(PII.filter(x=>x.re.test(todo)).map(x=>x.q))];
+  const box=el("#pii"); box.hidden=!hits.length;
+  if(hits.length) box.innerHTML=`<b>Detectamos ${hits.slice(0,3).join(", ")}${hits.length>3?" y otros datos":""}.</b> Reemplázalo por un marcador genérico, por ejemplo [cédula] o [radicado], antes de pegar el texto en una herramienta de IA.`;
+  ["rol","ctx","ins"].forEach(k=>el("#c-"+k).textContent=v[k].length);
+  const ln=(lab,tok,val,ph)=>`<strong style="color:var(--${tok})">${lab}</strong>\n`+(val?esc(val):`<span class="ph">${ph}</span>`);
+  el("#preview").innerHTML=[
+    ln("ROL","rol",v.rol,"(define quién responde)"),
+    ln("CONTEXTO","ctx",v.ctx,"(describe tu caso real)"),
+    ln("INSTRUCCIÓN","ins",v.ins,"(pide el entregable y su formato)")
+  ].join("\n\n");
+}
+Object.values(F).forEach(x=>x.addEventListener("input",evaluar));
+el("#copy-build").addEventListener("click",e=>{
+  const t=`ROL\n${F.rol.value.trim()}\n\nCONTEXTO\n${F.ctx.value.trim()}\n\nINSTRUCCIÓN\n${F.ins.value.trim()}`;
+  copiar(t,e.currentTarget);
+});
+el("#clear-build").addEventListener("click",()=>{Object.values(F).forEach(x=>x.value="");evaluar();toast("Laboratorio limpio")});
+let ejIdx=-1;
+el("#load-example").addEventListener("click",()=>{
+  ejIdx=(ejIdx+1)%PROMPTS.length;
+  F.rol.value=STATE[ejIdx].rol; F.ctx.value=STATE[ejIdx].ctx; F.ins.value=STATE[ejIdx].ins;
+  evaluar(); toast("Cargado: "+PROMPTS[ejIdx].t);
+});
+els(".seeds").forEach(g=>g.addEventListener("click",e=>{
+  const b=e.target.closest(".seed"); if(!b) return;
+  const ta=el("#"+g.dataset.for);
+  ta.value=(ta.value.trim()+" "+b.textContent.trim()).trim()+" "; ta.focus(); evaluar();
+}));
+
+/* ══ EJERCICIO ══ */
+let ronda=0, sel=null;
+function pintarRondas(){
+  const c=el("#rounds"); c.innerHTML="";
+  RONDAS.forEach((r,i)=>{
+    const b=document.createElement("button");
+    b.className="chip"; b.type="button";
+    b.innerHTML=`<span class="code">/${i+1}</span>${r.n}`;
+    b.setAttribute("aria-pressed",String(i===ronda));
+    b.addEventListener("click",()=>{ronda=i;montar()});
+    c.appendChild(b);
+  });
+}
+function montar(){
+  pintarRondas(); sel=null;
+  el("#ex-result").textContent=""; el("#ex-result").classList.remove("win");
+  els(".bucket").forEach(b=>b.querySelectorAll(".frag").forEach(f=>f.remove()));
+  const pool=el("#pool"); pool.innerHTML="";
+  const fr=RONDAS[ronda].f, orden=fr.map((_,i)=>i);
+  for(let i=orden.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[orden[i],orden[j]]=[orden[j],orden[i]]}
+  orden.map(i=>fr[i]).forEach(f=>{
+    const d=document.createElement("div");
+    d.className="frag"; d.draggable=true; d.dataset.k=f.k; d.textContent=f.x; d.tabIndex=0;
+    pool.appendChild(d);
+  });
+  contar();
+}
+const contar=()=>els(".bucket").forEach(b=>b.querySelector("[data-c]").textContent=b.querySelectorAll(".frag").length);
+function mover(f,z){z.appendChild(f);f.classList.remove("sel","ok","no");sel=null;
+  els(".frag").forEach(x=>x.classList.remove("sel"));contar()}
+document.addEventListener("dragstart",e=>{
+  const f=e.target.closest(".frag"); if(!f) return;
+  sel=f; f.classList.add("drag"); e.dataTransfer.effectAllowed="move";
+  try{e.dataTransfer.setData("text/plain","f")}catch(_){}
+});
+document.addEventListener("dragend",e=>{const f=e.target.closest(".frag");if(f)f.classList.remove("drag")});
+[...els(".bucket"),el("#pool")].forEach(z=>{
+  z.addEventListener("dragover",e=>{e.preventDefault();z.classList.add("over")});
+  z.addEventListener("dragleave",()=>z.classList.remove("over"));
+  z.addEventListener("drop",e=>{e.preventDefault();z.classList.remove("over");if(sel)mover(sel,z)});
+});
+el("#p-ejercicio").addEventListener("click",e=>{
+  const f=e.target.closest(".frag");
+  if(f){els(".frag").forEach(x=>x.classList.remove("sel"));if(sel!==f){f.classList.add("sel");sel=f}else sel=null;return}
+  const z=e.target.closest(".bucket")||e.target.closest("#pool");
+  if(z&&sel) mover(sel,z);
+});
+el("#check-ex").addEventListener("click",()=>{
+  let bien=0; const total=RONDAS[ronda].f.length, falta=el("#pool").querySelectorAll(".frag").length;
+  els(".bucket").forEach(b=>b.querySelectorAll(".frag").forEach(f=>{
+    const ok=f.dataset.k===b.dataset.k;
+    f.classList.remove("ok","no"); f.classList.add(ok?"ok":"no"); if(ok) bien++;
+  }));
+  const r=el("#ex-result");
+  if(falta) r.innerHTML=`Faltan <b>${falta}</b> fragmentos por clasificar.`;
+  else if(bien===total){r.innerHTML=`<b>${bien}/${total}</b> correctos. Ronda perfecta. Fíjate en cómo empieza cada frase.`;r.classList.add("win");toast("Ronda perfecta")}
+  else{r.innerHTML=`<b>${bien}/${total}</b> correctos. Los marcados en rojo están en el bloque equivocado.`;r.classList.remove("win")}
+});
+el("#reset-ex").addEventListener("click",montar);
+let seg=180,tick=null;
+const pintarT=()=>{const t=el("#timer");t.textContent=`${Math.floor(seg/60)}:${String(seg%60).padStart(2,"0")}`;t.classList.toggle("low",seg<=30)};
+el("#timer-btn").addEventListener("click",e=>{
+  if(tick){clearInterval(tick);tick=null;e.currentTarget.textContent="Reanudar";return}
+  if(seg===0)seg=180;
+  e.currentTarget.textContent="Pausar";
+  tick=setInterval(()=>{seg--;pintarT();
+    if(seg<=0){clearInterval(tick);tick=null;el("#timer-btn").textContent="Reiniciar";toast("Se acabó el tiempo")}},1000);
+});
+
+/* ══ NAV ══ */
+els(".navtab").forEach(t=>t.addEventListener("click",()=>{
+  const k=t.dataset.t;
+  els(".navtab").forEach(x=>x.setAttribute("aria-selected",String(x===t)));
+  ["biblioteca","laboratorio","ejercicio"].forEach(n=>el("#p-"+n).hidden=(n!==k));
+  el("#filters").hidden=(k!=="biblioteca");
+  if(k==="ejercicio"&&!el("#pool").children.length) montar();
+  const y=el(".method").offsetTop+el(".method").offsetHeight-1;
+  if(window.scrollY>y) window.scrollTo({top:y,behavior:"smooth"});
+}));
+document.addEventListener("keydown",e=>{
+  if(e.key==="/"&&!/^(INPUT|TEXTAREA)$/.test(e.target.tagName)&&!e.target.isContentEditable){
+    e.preventDefault(); el(".navtab[data-t='biblioteca']").click(); el("#q").focus();
+  }
+  if(e.key==="Escape"&&el("#dlg").open) el("#dlg").close();
+});
+chips(); render(); evaluar(); pintarT();
+const NAR=new Set(PROMPTS.map(p=>p.a)).size, NSUB=new Set(PROMPTS.map(p=>p.a+"|"+(p.s||""))).size;
+el("#foot-count").textContent=`${PROMPTS.length} prompts / ${NAR} áreas / ${NSUB} subáreas`;
+el("#n-prompts").textContent=PROMPTS.length; el("#n-areas").textContent=NAR;
+el("#q").addEventListener("input",e=>{query=e.target.value;render()});
+</script>
+
+</body>
+</html>
